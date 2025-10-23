@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Local</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="content" id="contentArea">
+        <!-- Content will be loaded here -->
+        <div style="text-align: center; padding: 50px 20px;">
+            <i class="fas fa-store" style="font-size: 60px; color: #88cfc8; margin-bottom: 20px;"></i>
+            <h2 style="color: #88cfc8;">Shop Local</h2>
+            <p>Loading...</p>
+        </div>
+    </div>
+    
+    <nav class="navbar">
+        <a href="#home" class="nav-item active" data-route="home">
+            <i class="fas fa-home nav-icon"></i>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="#discover" class="nav-item" data-route="discover">
+            <i class="fas fa-search nav-icon"></i>
+            <span class="nav-label">Discover</span>
+        </a>
+        <a href="#online" class="nav-item" data-route="online">
+            <i class="fas fa-plus nav-icon"></i>
+            <span class="nav-label">Online</span>
+        </a>
+        <a href="#profile" class="nav-item" data-route="profile">
+            <i class="fas fa-user nav-icon"></i>
+            <span class="nav-label">Profile</span>
+        </a>
+        <a href="#settings" class="nav-item" data-route="settings">
+            <i class="fas fa-cog nav-icon"></i>
+            <span class="nav-label">Settings</span>
+        </a>
+    </nav>
+
+    <!-- Add Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts.js"></script>
+    <script src="script2.js"></script>
+    <script src ="supabase.js"></script>
+</body>
+</html>
