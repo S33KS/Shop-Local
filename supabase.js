@@ -1,3 +1,5 @@
+[file name]: supabase.js
+[file content begin]
 // supabase.js - Fixed Backend Service for Shop Local
 
 class SupabaseService {
@@ -26,7 +28,7 @@ class SupabaseService {
         
         try {
             const { data, error } = await this.supabase
-                .from('users')
+                .from('shops')
                 .select('count')
                 .limit(1);
             
@@ -71,7 +73,8 @@ class SupabaseService {
                     .update({
                         password: userData.password,
                         city: userData.city,
-                        joined_date: userData.joinedDate || new Date().toISOString()
+                        joined_date: userData.joinedDate || new Date().toISOString(),
+                        updated_at: new Date().toISOString()
                     })
                     .eq('username', userData.username)
                     .select()
@@ -98,7 +101,9 @@ class SupabaseService {
                         username: userData.username,
                         password: userData.password,
                         city: userData.city,
-                        joined_date: userData.joinedDate || new Date().toISOString()
+                        joined_date: userData.joinedDate || new Date().toISOString(),
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
                     }])
                     .select()
                     .single();
@@ -188,7 +193,7 @@ class SupabaseService {
         }
     }
 
-    // Shop Management
+    // Shop Management - FIXED
     async createShop(shopData) {
         console.log('Creating shop in Supabase:', shopData.name);
         
@@ -213,7 +218,9 @@ class SupabaseService {
                     is_open: shopData.isOpen !== false,
                     details: shopData.details,
                     upvotes: shopData.upvotes || 0,
-                    downvotes: shopData.downvotes || 0
+                    downvotes: shopData.downvotes || 0,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 }])
                 .select()
                 .single();
@@ -229,7 +236,8 @@ class SupabaseService {
             if (shopData.categories && shopData.categories.length > 0) {
                 const categories = shopData.categories.map(category => ({
                     shop_id: shop.id,
-                    category: category
+                    category: category,
+                    created_at: new Date().toISOString()
                 }));
                 
                 const { error: categoryError } = await this.supabase
@@ -249,7 +257,8 @@ class SupabaseService {
                     shop_id: shop.id,
                     name: item.name,
                     price: item.price,
-                    image_url: item.image
+                    image_url: item.image,
+                    created_at: new Date().toISOString()
                 }));
                 
                 const { error: itemError } = await this.supabase
@@ -307,7 +316,9 @@ class SupabaseService {
                 return this.fallbackGetShops(filters);
             }
 
-            console.log('Shops retrieved from Supabase:', data.length);
+            console.log('Shops retrieved from Supabase:', data?.length || 0);
+
+            if (!data) return [];
 
             // Transform data and apply category filter client-side
             const transformedShops = data.map(shop => ({
@@ -332,7 +343,7 @@ class SupabaseService {
             // Apply category filter client-side
             if (filters.categories && filters.categories.length > 0) {
                 const filtered = transformedShops.filter(shop => 
-                    shop.categories.some(cat => filters.categories.includes(cat))
+                    shop.categories && shop.categories.some(cat => filters.categories.includes(cat))
                 );
                 console.log('After category filtering:', filtered.length);
                 return filtered;
@@ -409,7 +420,8 @@ class SupabaseService {
                 .from('shops')
                 .update({ 
                     upvotes: upvotes,
-                    downvotes: downvotes 
+                    downvotes: downvotes,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', shopId);
                 
@@ -422,6 +434,58 @@ class SupabaseService {
         } catch (error) {
             console.error('Error in updateShopVotes:', error);
             this.fallbackUpdateShopVotes(shopId, upvotes, downvotes);
+        }
+    }
+
+    // Item Likes Management
+    async getItemLikes() {
+        if (!this.supabase) return this.fallbackGetItemLikes();
+        
+        try {
+            const { data, error } = await this.supabase
+                .from('item_likes')
+                .select('*');
+            
+            if (error) {
+                console.error('Error getting item likes:', error);
+                return this.fallbackGetItemLikes();
+            }
+            
+            const likesMap = {};
+            data.forEach(like => {
+                const itemKey = `${like.shop_id}_${like.item_index}`;
+                likesMap[itemKey] = like.like_count || 0;
+            });
+            
+            return likesMap;
+        } catch (error) {
+            console.error('Error in getItemLikes:', error);
+            return this.fallbackGetItemLikes();
+        }
+    }
+
+    async updateItemLike(shopId, itemIndex, likeCount) {
+        if (!this.supabase) return this.fallbackUpdateItemLike(shopId, itemIndex, likeCount);
+        
+        try {
+            const { error } = await this.supabase
+                .from('item_likes')
+                .upsert({
+                    shop_id: shopId,
+                    item_index: itemIndex,
+                    like_count: likeCount,
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'shop_id,item_index'
+                });
+                
+            if (error) {
+                console.error('Error updating item like:', error);
+                this.fallbackUpdateItemLike(shopId, itemIndex, likeCount);
+            }
+        } catch (error) {
+            console.error('Error in updateItemLike:', error);
+            this.fallbackUpdateItemLike(shopId, itemIndex, likeCount);
         }
     }
 
@@ -502,6 +566,17 @@ class SupabaseService {
             localStorage.setItem('shopLocal_shops', JSON.stringify(shops));
         }
     }
+
+    fallbackGetItemLikes() {
+        return JSON.parse(localStorage.getItem('shopLocal_itemLikes') || '{}');
+    }
+
+    fallbackUpdateItemLike(shopId, itemIndex, likeCount) {
+        const itemLikes = JSON.parse(localStorage.getItem('shopLocal_itemLikes') || '{}');
+        const itemKey = `${shopId}_${itemIndex}`;
+        itemLikes[itemKey] = likeCount;
+        localStorage.setItem('shopLocal_itemLikes', JSON.stringify(itemLikes));
+    }
 }
 
 // Create global instance
@@ -509,3 +584,15 @@ const supabaseService = new SupabaseService();
 
 // Make it globally available
 window.supabaseService = supabaseService;
+
+// Initialize and test connection
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Testing Supabase connection...');
+    const isConnected = await supabaseService.checkConnection();
+    if (isConnected) {
+        console.log('✅ Supabase backend is working!');
+    } else {
+        console.log('⚠️ Supabase not available, using localStorage fallback');
+    }
+});
+[file content end]
