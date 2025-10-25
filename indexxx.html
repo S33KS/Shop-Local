@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Local</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #fafafa;
+            color: #262626;
+            padding-bottom: 70px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #88cfc8;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        /* Section Styles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 15px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .view-all-btn {
+            background: #88cfc8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 5px 20px 5px;
+            scrollbar-width: none;
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Shop Cards */
+        .shop-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 280px;
+            padding: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .shop-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .shop-avatar {
+            width: 50px;
+            height: 50px;
+            background: #88cfc8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .shop-info {
+            flex: 1;
+        }
+
+        .shop-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .shop-category {
+            color: #88cfc8;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .shop-image {
+            width: 100%;
+            height: 120px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #88cfc8;
+            font-size: 30px;
+        }
+
+        .shop-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shop-status {
+            background: #e8f5e8;
+            color: #27ae60;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .shop-votes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Trending Items */
+        .item-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 200px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #88cfc8;
+            font-size: 24px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .item-price {
+            color: #88cfc8;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .item-likes {
+            color: #666;
+            font-size: 11px;
+        }
+
+        /* Creator Cards */
+        .creator-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 250px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .creator-avatar {
+            width: 50px;
+            height: 50px;
+            background: #88cfc8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .creator-info {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .creator-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .creator-score {
+            background: #88cfc8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <!-- Popular Shops Section -->
+        <div class="section-header">
+            <div class="section-title">🔥 Most Popular Shops</div>
+            <button class="view-all-btn">View All</button>
+        </div>
+        <div class="horizontal-scroll">
+            <div class="shop-card">
+                <div class="shop-header">
+                    <div class="shop-avatar">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="shop-info">
+                        <div class="shop-name">Fashion Hub</div>
+                        <div class="shop-category">Clothing</div>
+                    </div>
+                </div>
+                <div class="shop-image">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <div class="shop-details">
+                    <div class="shop-status">🟢 Open</div>
+                    <div class="shop-votes">
+                        <i class="fas fa-arrow-up"></i> 124
+                        <i class="fas fa-arrow-down"></i> 12
+                    </div>
+                </div>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-header">
+                    <div class="shop-avatar">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="shop-info">
+                        <div class="shop-name">Tech World</div>
+                        <div class="shop-category">Electronics</div>
+                    </div>
+                </div>
+                <div class="shop-image">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <div class="shop-details">
+                    <div class="shop-status">🟢 Open</div>
+                    <div class="shop-votes">
+                        <i class="fas fa-arrow-up"></i> 89
+                        <i class="fas fa-arrow-down"></i> 5
+                    </div>
+                </div>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-header">
+                    <div class="shop-avatar">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="shop-info">
+                        <div class="shop-name">Food Paradise</div>
+                        <div class="shop-category">Restaurant</div>
+                    </div>
+                </div>
+                <div class="shop-image">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="shop-details">
+                    <div class="shop-status">🔴 Closed</div>
+                    <div class="shop-votes">
+                        <i class="fas fa-arrow-up"></i> 156
+                        <i class="fas fa-arrow-down"></i> 8
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Items Section -->
+        <div class="section-header">
+            <div class="section-title">❤️ Trending Items</div>
+            <button class="view-all-btn">View All</button>
+        </div>
+        <div class="horizontal-scroll">
+            <div class="item-card">
+                <div class="item-image">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <div class="item-name">Summer T-Shirt</div>
+                <div class="item-price">₹499</div>
+                <div class="item-likes">
+                    <i class="fas fa-heart"></i> 45 likes
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="item-image">
+                    <i class="fas fa-mobile"></i>
+                </div>
+                <div class="item-name">Wireless Earbuds</div>
+                <div class="item-price">₹1,299</div>
+                <div class="item-likes">
+                    <i class="fas fa-heart"></i> 32 likes
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="item-image">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="item-name">Novel Book</div>
+                <div class="item-price">₹299</div>
+                <div class="item-likes">
+                    <i class="fas fa-heart"></i> 28 likes
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Creators Section -->
+        <div class="section-header">
+            <div class="section-title">⭐ Top Creators</div>
+        </div>
+        <div class="horizontal-scroll">
+            <div class="creator-card">
+                <div class="creator-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="creator-info">
+                    <div class="creator-name">John Doe</div>
+                    <div class="creator-stats">
+                        <span>5 shops</span>
+                        <span>234 upvotes</span>
+                    </div>
+                </div>
+                <div class="creator-score">258 pts</div>
+            </div>
+
+            <div class="creator-card">
+                <div class="creator-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="creator-info">
+                    <div class="creator-name">Sarah Smith</div>
+                    <div class="creator-stats">
+                        <span>3 shops</span>
+                        <span>189 upvotes</span>
+                    </div>
+                </div>
+                <div class="creator-score">195 pts</div>
+            </div>
+
+            <div class="creator-card">
+                <div class="creator-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="creator-info">
+                    <div class="creator-name">Mike Johnson</div>
+                    <div class="creator-stats">
+                        <span>4 shops</span>
+                        <span>167 upvotes</span>
+                    </div>
+                </div>
+                <div class="creator-score">183 pts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home nav-icon"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-search nav-icon"></i>
+            <span>Discover</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-plus nav-icon"></i>
+            <span>Online</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <span>Profile</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-cog nav-icon"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <script>
+        // Simple navigation highlighting
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Simple hover effects
+        document.querySelectorAll('.shop-card, .item-card, .creator-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            });
+        });
+    </script>
+</body>
+</html>
